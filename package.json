@@ -1,0 +1,28 @@
+{
+  "name": "streaming-platform",
+  "version": "1.0.0",
+  "description": "A monorepo streaming platform",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "format": "turbo run format",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "latest"
+  },
+  "keywords": [
+    "streaming",
+    "monorepo",
+    "platform"
+  ],
+  "author": "",
+  "license": "MIT"
+}
