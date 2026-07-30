@@ -9,8 +9,8 @@ export const TabsList = React.forwardRef<HTMLDivElement, React.ComponentProps<ty
 TabsList.displayName = "TabsList";
 
 export const TabsTrigger = React.forwardRef<HTMLButtonElement, React.ComponentProps<typeof RadixTabs.Trigger>>(({ className, children, ...props }, ref) => (
-  <RadixTabs.Trigger asChild>
-    <button ref={ref} className={clsx("px-3 py-2 rounded-[8px] text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800", className)} {...props}>
+  <RadixTabs.Trigger asChild {...props}>
+    <button ref={ref} className={clsx("px-3 py-2 rounded-[8px] text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800", className)}>
       {children}
     </button>
   </RadixTabs.Trigger>
