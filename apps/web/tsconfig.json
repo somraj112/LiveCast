@@ -19,7 +19,9 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@streamline/ui": ["../../packages/ui/src"],
+      "@streamline/ui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": [
