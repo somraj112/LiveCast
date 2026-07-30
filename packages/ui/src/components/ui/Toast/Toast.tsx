@@ -11,7 +11,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   return <RadixToast.Provider swipeDirection="right">{children}</RadixToast.Provider>;
 };
 
-export const ToastViewport = (props: React.HTMLAttributes<HTMLDivElement>) => (
+export const ToastViewport = (props: React.ComponentProps<typeof RadixToast.Viewport>) => (
   <RadixToast.Viewport className="fixed bottom-4 right-4 flex flex-col gap-2 p-4 z-50" {...props} />
 );
 
