@@ -45,3 +45,14 @@ export type { PasswordInputProps } from "./components/ui/PasswordInput/PasswordI
 
 export { Select, SelectItem } from "./components/ui/Select/Select";
 export type { SelectProps } from "./components/ui/Select/Select";
+
+export { Navbar } from "./components/ui/Navbar/Navbar";
+export type { NavbarProps } from "./components/ui/Navbar/Navbar";
+
+export { Sidebar, SidebarItem } from "./components/ui/Sidebar/Sidebar";
+export type { SidebarProps, SidebarItemProps } from "./components/ui/Sidebar/Sidebar";
+
+export { Breadcrumb } from "./components/ui/Breadcrumb/Breadcrumb";
+export type { BreadcrumbProps } from "./components/ui/Breadcrumb/Breadcrumb";
+
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/Tabs/Tabs";
