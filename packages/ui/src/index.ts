@@ -71,3 +71,6 @@ export type { ViewerCountProps } from "./components/stream/ViewerCount/ViewerCou
 
 export { StreamThumbnail } from "./components/stream/StreamThumbnail/StreamThumbnail";
 export type { StreamThumbnailProps } from "./components/stream/StreamThumbnail/StreamThumbnail";
+
+export { StreamListSkeleton } from "./components/stream/StreamListSkeleton/StreamListSkeleton";
+export type { StreamListSkeletonProps } from "./components/stream/StreamListSkeleton/StreamListSkeleton";
