@@ -3,7 +3,7 @@ import clsx from "clsx";
 
 export type Crumb = { label: React.ReactNode; href?: string };
 
-export type BreadcrumbProps = React.HTMLAttributes<nav> & {
+export type BreadcrumbProps = React.HTMLAttributes<HTMLElement> & {
   items?: Crumb[];
 };
 
