@@ -23,6 +23,10 @@
     "@radix-ui/react-alert-dialog": "^1.0.0",
     "@radix-ui/react-toast": "^1.0.0",
     "@radix-ui/react-portal": "^1.0.0",
+    "@radix-ui/react-checkbox": "^1.0.0",
+    "@radix-ui/react-radio-group": "^1.0.0",
+    "@radix-ui/react-switch": "^1.0.0",
+    "@radix-ui/react-select": "^1.0.0",
     "lucide-react": "^0.265.0"
   }
 }
