@@ -29,14 +29,18 @@ export const Dialog = ({ title, description, children, className, ...props }: Di
               {title ? <RadixDialog.Title className="text-lg font-semibold">{title}</RadixDialog.Title> : null}
               {description ? <RadixDialog.Description id="dialog-description" className="text-sm text-slate-500">{description}</RadixDialog.Description> : null}
             </div>
-            <RadixDialog.Close aria-label="Close" className="text-slate-500 hover:text-slate-700">
-              <X />
+            <RadixDialog.Close asChild>
+              <button aria-label="Close" className="text-slate-500 hover:text-slate-700">
+                <X />
+              </button>
             </RadixDialog.Close>
           </div>
 
           <div className="mt-4">{children}</div>
 
-          <RadixDialog.Close className="sr-only">Close</RadixDialog.Close>
+          <RadixDialog.Close asChild>
+            <button className="sr-only">Close</button>
+          </RadixDialog.Close>
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>

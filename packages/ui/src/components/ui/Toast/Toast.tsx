@@ -22,7 +22,9 @@ export const Toast = ({ title, description, className, ...props }: ToastProps) =
         {title ? <RadixToast.Title className="font-semibold">{title}</RadixToast.Title> : null}
         {description ? <RadixToast.Description className="text-sm text-slate-500">{description}</RadixToast.Description> : null}
       </div>
-      <RadixToast.Close className="ml-2 text-slate-500">Close</RadixToast.Close>
+    <RadixToast.Close asChild>
+      <button className="ml-2 text-slate-500">Close</button>
+    </RadixToast.Close>
     </RadixToast.Root>
   );
 };

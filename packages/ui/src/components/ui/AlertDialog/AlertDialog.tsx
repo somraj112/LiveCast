@@ -22,13 +22,15 @@ export const AlertDialog = ({ title, description, confirmText = "Confirm", cance
               {title ? <RadixAlert.Title className="text-lg font-semibold">{title}</RadixAlert.Title> : null}
               {description ? <RadixAlert.Description className="text-sm text-slate-500">{description}</RadixAlert.Description> : null}
             </div>
-            <RadixAlert.Cancel className="text-slate-500 hover:text-slate-700">
-              <X />
+            <RadixAlert.Cancel asChild>
+              <button className="text-slate-500 hover:text-slate-700"><X /></button>
             </RadixAlert.Cancel>
           </div>
 
           <div className="mt-6 flex justify-end gap-2">
-            <RadixAlert.Cancel className="rounded-[8px] px-3 py-2 bg-slate-100 dark:bg-slate-800">{cancelText}</RadixAlert.Cancel>
+            <RadixAlert.Cancel asChild>
+              <button className="rounded-[8px] px-3 py-2 bg-slate-100 dark:bg-slate-800">{cancelText}</button>
+            </RadixAlert.Cancel>
             <RadixAlert.Action asChild>
               <button onClick={onConfirm} className="rounded-[8px] px-3 py-2 bg-red-600 text-white">{confirmText}</button>
             </RadixAlert.Action>
