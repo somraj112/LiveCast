@@ -18,6 +18,11 @@
   "dependencies": {
     "class-variance-authority": "^0.6.3",
     "tailwind-merge": "^1.14.2",
-    "clsx": "^1.2.1"
+    "clsx": "^1.2.1",
+    "@radix-ui/react-dialog": "^1.0.0",
+    "@radix-ui/react-alert-dialog": "^1.0.0",
+    "@radix-ui/react-toast": "^1.0.0",
+    "@radix-ui/react-portal": "^1.0.0",
+    "lucide-react": "^0.265.0"
   }
 }
