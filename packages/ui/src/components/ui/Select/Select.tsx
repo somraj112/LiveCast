@@ -8,11 +8,13 @@ export type SelectProps = React.ComponentProps<typeof RadixSelect.Root> & { clas
 export const Select = ({ className, children, placeholder, ...props }: SelectProps) => {
   return (
     <RadixSelect.Root {...props}>
-      <RadixSelect.Trigger className={clsx("inline-flex items-center justify-between gap-2 rounded-[8px] border px-3 py-2 text-sm w-full", "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900", className)} aria-label={placeholder}>
-        <RadixSelect.Value placeholder={placeholder} />
-        <RadixSelect.Icon>
-          <ChevronDown className="h-4 w-4" />
-        </RadixSelect.Icon>
+      <RadixSelect.Trigger asChild>
+        <button className={clsx("inline-flex items-center justify-between gap-2 rounded-[8px] border px-3 py-2 text-sm w-full", "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900", className)} aria-label={placeholder}>
+          <RadixSelect.Value placeholder={placeholder} />
+          <RadixSelect.Icon>
+            <ChevronDown className="h-4 w-4" />
+          </RadixSelect.Icon>
+        </button>
       </RadixSelect.Trigger>
 
       <RadixSelect.Portal>
