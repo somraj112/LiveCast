@@ -74,3 +74,18 @@ export type { StreamThumbnailProps } from "./components/stream/StreamThumbnail/S
 
 export { StreamListSkeleton } from "./components/stream/StreamListSkeleton/StreamListSkeleton";
 export type { StreamListSkeletonProps } from "./components/stream/StreamListSkeleton/StreamListSkeleton";
+
+export { ChatBubble } from "./components/chat/ChatBubble/ChatBubble";
+export type { ChatBubbleProps } from "./components/chat/ChatBubble/ChatBubble";
+
+export { ChatMessage } from "./components/chat/ChatMessage/ChatMessage";
+export type { ChatMessageProps } from "./components/chat/ChatMessage/ChatMessage";
+
+export { ChatInput } from "./components/chat/ChatInput/ChatInput";
+export type { ChatInputProps } from "./components/chat/ChatInput/ChatInput";
+
+export { StatCard } from "./components/analytics/StatCard/StatCard";
+export type { StatCardProps } from "./components/analytics/StatCard/StatCard";
+
+export { MetricCard } from "./components/analytics/MetricCard/MetricCard";
+export type { MetricCardProps } from "./components/analytics/MetricCard/MetricCard";
