@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import ComponentSection from "./_components/ComponentSection";
+import DevConsoleFilter from "./_components/DevConsoleFilter";
 import ButtonShowcase from "./showcases/ButtonShowcase";
 import InputShowcase from "./showcases/InputShowcase";
 import CardShowcase from "./showcases/CardShowcase";
@@ -15,6 +16,7 @@ export default function ComponentsPage() {
   return (
     <main className="p-6 max-w-7xl mx-auto">
       <header className="mb-8">
+        <DevConsoleFilter />
         <h1 className="text-3xl font-semibold">Component Library</h1>
         <p className="text-slate-500 mt-2">Reusable UI components used throughout LiveCast.</p>
       </header>
