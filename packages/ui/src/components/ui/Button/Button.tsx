@@ -26,15 +26,15 @@ const buttonVariants = cva(
   }
 );
 
-export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & VariantProps<typeof buttonVariants> & { loading?: boolean };
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & VariantProps<typeof buttonVariants> & { loading?: boolean; icon?: React.ReactNode };
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, size, children, loading = false, disabled, ...props }, ref) => {
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, size, children, loading = false, disabled, icon, ...props }, ref) => {
   const merged = twMerge(buttonVariants({ variant, size }), className);
 
   return (
     <button
       ref={ref}
-      className={clsx(merged)}
+      className={clsx(merged, "inline-flex items-center")}
       disabled={disabled || loading}
       aria-busy={loading}
       {...props}
@@ -44,6 +44,9 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ classN
           <Spinner size={16} className="animate-spin" />
         </span>
       ) : null}
+
+      {icon ? <span className={clsx(children ? "mr-2" : "")}>{icon}</span> : null}
+
       {children}
     </button>
   );
