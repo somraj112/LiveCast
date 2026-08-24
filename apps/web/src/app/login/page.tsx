@@ -69,12 +69,12 @@ export default function LoginPage() {
             <form className="mt-6 space-y-4" onSubmit={onSubmit}>
               <div>
                 <label className="sr-only" htmlFor="email">Email</label>
-                <Input id="email" name="email" type="email" size="lg" className="rounded-2xl px-4 text-base bg-slate-900/40 border-slate-600" placeholder="you@studio.com" />
+                <Input id="email" name="email" type="email" className="rounded-2xl px-4 text-base bg-slate-900/40 border-slate-600" placeholder="you@studio.com" />
               </div>
 
               <div className="relative">
                 <label className="sr-only" htmlFor="password">Password</label>
-                <Input id="password" name="password" type={pwdVisible ? "text" : "password"} size="lg" className="rounded-2xl px-4 text-base bg-slate-900/40 border-slate-600" placeholder="Enter your password" />
+                <Input id="password" name="password" type={pwdVisible ? "text" : "password"} className="rounded-2xl px-4 text-base bg-slate-900/40 border-slate-600" placeholder="Enter your password" />
                 <button
                   type="button"
                   onClick={() => setPwdVisible((v) => !v)}

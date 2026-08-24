@@ -8,12 +8,14 @@
     "declarationMap": true,
     "emitDeclarationOnly": false,
     "strict": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "rootDir": "./src",
     "outDir": "dist",
     "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
     "resolveJsonModule": true
   },
   "include": ["src"]
