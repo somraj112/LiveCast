@@ -109,7 +109,7 @@ export default function LoginPage() {
                 <Button type="button" variant="ghost">GitHub</Button>
               </div>
 
-              <p className="mt-3 text-sm text-center text-slate-400">New to LiveCast? <Link href="#" className="text-indigo-400 hover:underline">Create an account</Link></p>
+              <p className="mt-3 text-sm text-center text-slate-400">New to LiveCast? <Link href="/signup" className="text-indigo-400 hover:underline">Create an account</Link></p>
             </form>
 
             <div className="mt-6 text-xs text-center text-slate-500">By signing in you agree to the <Link href="#" className="text-indigo-400">Terms</Link> and <Link href="#" className="text-indigo-400">Privacy Policy</Link>.</div>
