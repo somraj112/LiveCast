@@ -1,65 +1,146 @@
-import Image from "next/image";
+"use client";
+import { useRef, useState } from "react";
+import {
+  ArrowUpRight,
+  ArrowRight,
+  X,
+  Radio,
+  SlidersHorizontal,
+} from "lucide-react";
+import { Button, StreamCard, LiveBadge, ViewerCount } from "@streamline/ui";
+import { artwork, programs, type Program } from "./_ui/programs";
 
-export default function Home() {
+export default function Discover() {
+  const [filter, setFilter] = useState("All channels");
+  const [selected, setSelected] = useState<Program>(programs[0]);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const [featured, ...channels] = programs;
+  const visible = channels.filter(
+    (p) => filter === "All channels" || p.category === filter,
+  );
+  function open(p: Program) {
+    setSelected(p);
+    dialog.current?.showModal();
+  }
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main id="content" className="wrap guide">
+      <div className="guide-top">
+        <span className="eyebrow">
+          <i className="signal-dot" /> Broadcast guide
+        </span>
+        <span className="edition">LiveCast &nbsp;/&nbsp; Demo edition</span>
+      </div>
+      <section className="feature" aria-labelledby="featured-title">
+        <div className="feature-copy">
+          <div className="feature-kicker">
+            <Radio size={15} /> Featured broadcast
+          </div>
+          <h1 id="featured-title">
+            After Hours
+            <br />
+            <em>Radio.</em>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+          <p>{featured.description}</p>
+          <Button className="feature-cta" onClick={() => open(featured)}>
+            Explore channel <ArrowUpRight size={17} />
+          </Button>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+        <div
+          className="hero-art"
+          role="img"
+          aria-label="Illustrated silver turntable with a black vinyl record against signal orange"
+        >
+          <span className="art-label">Meridian sound system</span>
+          <span className="art-serial">Fig. 01 &nbsp; / &nbsp; 33 RPM</span>
+        </div>
+      </section>
+      <section className="lineup" aria-labelledby="lineup-title">
+        <div className="lineup-head">
+          <div>
+            <span className="eyebrow">Channel directory</span>
+            <h2 id="lineup-title">
+              On the air<span>.</span>
+            </h2>
+          </div>
+          <span className="lineup-count" aria-live="polite">
+            {String(visible.length).padStart(2, "0")}{" "}
+            {visible.length === 1 ? "channel" : "channels"}
+          </span>
+        </div>
+        <div className="filterbar" role="group" aria-label="Filter by category">
+          <SlidersHorizontal size={15} aria-hidden="true" />
+          {["All channels", "Design", "Technology", "Music"].map((item) => (
+            <button
+              key={item}
+              type="button"
+              aria-pressed={filter === item}
+              onClick={() => setFilter(item)}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+        <div className="stream-grid">
+          {visible.map((p) => (
+            <StreamCard
+              key={p.id}
+              thumbnail={artwork(p)}
+              title={p.title}
+              category={p.category}
+              creatorName={p.creator}
+              viewers={p.viewers}
+              isLive
+              onClick={() => open(p)}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
         </div>
-      </main>
-    </div>
+      </section>
+      <footer className="guide-footer">
+        <b>LiveCast</b>
+        <span>Independent broadcast guide</span>
+        <a href="#content">Back to top ↑</a>
+      </footer>
+      <dialog
+        ref={dialog}
+        className="channel-dialog"
+        aria-labelledby="channel-title"
+        onClick={(e) => {
+          if (e.target === dialog.current) dialog.current.close();
+        }}
+      >
+        <div>
+          <div
+            className="dialog-art"
+            style={{ backgroundImage: "url(" + artwork(selected) + ")" }}
+          >
+            <button
+              aria-label="Close channel details"
+              autoFocus
+              onClick={() => dialog.current?.close()}
+            >
+              <X size={18} />
+            </button>
+          </div>
+          <div className="dialog-copy">
+            <div className="dialog-flags">
+              <LiveBadge>Demo channel</LiveBadge>
+              <ViewerCount count={selected.viewers} />
+            </div>
+            <span className="eyebrow">
+              {selected.category} / Channel {selected.id}
+            </span>
+            <h2 id="channel-title">{selected.title}</h2>
+            <strong>{selected.creator}</strong>
+            <p>{selected.description}</p>
+            <small>
+              This preview uses sample listings. Live playback is not available.
+            </small>
+            <Button variant="ghost" onClick={() => dialog.current?.close()}>
+              Back to the guide <ArrowRight size={15} />
+            </Button>
+          </div>
+        </div>
+      </dialog>
+    </main>
   );
 }

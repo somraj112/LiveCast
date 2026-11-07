@@ -3,14 +3,24 @@ import { Input, type InputProps } from "../Input/Input";
 import { Eye, EyeOff } from "lucide-react";
 import clsx from "clsx";
 
-export type PasswordInputProps = Omit<InputProps, "type"> & { showToggle?: boolean };
+export type PasswordInputProps = Omit<InputProps, "type"> & {
+  showToggle?: boolean;
+};
 
-export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(({ className, showToggle = true, ...props }, ref) => {
+export const PasswordInput = React.forwardRef<
+  HTMLInputElement,
+  PasswordInputProps
+>(({ className, showToggle = true, ...props }, ref) => {
   const [visible, setVisible] = React.useState(false);
 
   return (
     <div className={clsx("relative", className)}>
-      <Input ref={ref} type={visible ? "text" : "password"} {...props} />
+      <Input
+        ref={ref}
+        className="pr-11"
+        type={visible ? "text" : "password"}
+        {...props}
+      />
       {showToggle ? (
         <button
           type="button"
@@ -18,7 +28,11 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
           onClick={() => setVisible((v) => !v)}
           className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-slate-500 hover:text-slate-700"
         >
-          {visible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          {visible ? (
+            <EyeOff className="h-4 w-4" />
+          ) : (
+            <Eye className="h-4 w-4" />
+          )}
         </button>
       ) : null}
     </div>

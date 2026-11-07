@@ -7,11 +7,15 @@ export const InputShowcase = () => {
   return (
     <ComponentPreview title="Inputs">
       <div className="flex flex-col gap-3">
-        <Input placeholder="Default" />
+        <Input placeholder="Channel name" aria-label="Channel name" />
         <Input type="email" placeholder="email@example.com" />
         <PasswordInput placeholder="Password" />
         <Input placeholder="Disabled" disabled />
-        <Input placeholder="Error state (TODO styling)" aria-invalid />
+        <Input
+          aria-label="Invalid channel name"
+          placeholder="Channel name is required"
+          aria-invalid
+        />
       </div>
     </ComponentPreview>
   );

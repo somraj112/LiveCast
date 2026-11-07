@@ -1,42 +1,62 @@
 "use client";
-import React from "react";
-import { Navbar, Sidebar, SidebarItem, Breadcrumb, Tabs, TabsList, TabsTrigger, TabsContent } from "@streamline/ui";
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Navbar,
+  Sidebar,
+  SidebarItem,
+  Breadcrumb,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@streamline/ui";
 import ComponentPreview from "../_components/ComponentPreview";
-
-export const NavShowcase = () => {
+export default function NavShowcase() {
+  const [collapsed, setCollapsed] = useState(false);
+  const links = (
+    <div className="flex gap-4 text-sm">
+      <Link href="/">Discover</Link>
+      <Link href="/login">Log in</Link>
+    </div>
+  );
   return (
-    <ComponentPreview title="Navigation">
-      <div className="space-y-4">
-        <div>
-          <Navbar brand={<strong>LiveCast</strong>} leftSlot={<div className="text-sm">Browse</div>} rightSlot={<div className="text-sm">Account</div>} />
-        </div>
-
-        <div className="flex gap-4">
-          <div className="w-64">
-            <Sidebar>
-              <SidebarItem href="#" label="Home" active />
-              <SidebarItem href="#" label="Browse" />
-              <SidebarItem href="#" label="Creator Studio" />
-            </Sidebar>
-          </div>
-
-          <div className="flex-1">
-            <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Streams" }]} />
-
-            <Tabs defaultValue="one">
-              <TabsList>
-                <TabsTrigger value="one">Tab One</TabsTrigger>
-                <TabsTrigger value="two">Tab Two</TabsTrigger>
+    <ComponentPreview title="Studio navigation">
+      <div className="space-y-5">
+        <Navbar
+          sticky={false}
+          brand={<strong>LiveCast</strong>}
+          leftSlot={links}
+        >
+          {links}
+        </Navbar>
+        <div className="grid gap-5 lg:grid-cols-2">
+          <Sidebar
+            collapsed={collapsed}
+            onToggle={setCollapsed}
+            className="max-w-full"
+          >
+            <SidebarItem href="/" label="Discover" />
+            <SidebarItem href="/components" label="Library" active />
+            <SidebarItem href="/signup" label="Join LiveCast" />
+          </Sidebar>
+          <div>
+            <Breadcrumb
+              items={[{ label: "Discover", href: "/" }, { label: "Studio" }]}
+            />
+            <Tabs defaultValue="broadcast">
+              <TabsList aria-label="Studio preview">
+                <TabsTrigger value="broadcast">Broadcast</TabsTrigger>
+                <TabsTrigger value="audience">Audience</TabsTrigger>
               </TabsList>
-
-              <TabsContent value="one">Content for tab one</TabsContent>
-              <TabsContent value="two">Content for tab two</TabsContent>
+              <TabsContent value="broadcast">
+                After Hours Radio · Studio Meridian
+              </TabsContent>
+              <TabsContent value="audience">1,240 sample viewers</TabsContent>
             </Tabs>
           </div>
         </div>
       </div>
     </ComponentPreview>
   );
-};
-
-export default NavShowcase;
+}

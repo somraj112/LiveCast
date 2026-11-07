@@ -1,7 +1,5 @@
 "use client";
-import React from "react";
-import ComponentSection from "./_components/ComponentSection";
-import DevConsoleFilter from "./_components/DevConsoleFilter";
+import { useState } from "react";
 import ButtonShowcase from "./showcases/ButtonShowcase";
 import InputShowcase from "./showcases/InputShowcase";
 import CardShowcase from "./showcases/CardShowcase";
@@ -11,46 +9,91 @@ import NavShowcase from "./showcases/NavShowcase";
 import StreamShowcase from "./showcases/StreamShowcase";
 import ChatShowcase from "./showcases/ChatShowcase";
 import AnalyticsShowcase from "./showcases/AnalyticsShowcase";
+import "./library.css";
 
+const sections = [
+  {
+    name: "Foundations",
+    text: "The actions, labels, and surfaces that give each channel a familiar feel.",
+    content: (
+      <div className="kit-grid">
+        <ButtonShowcase />
+        <AvatarBadgeShowcase />
+        <InputShowcase />
+        <CardShowcase />
+      </div>
+    ),
+  },
+  {
+    name: "Forms",
+    text: "Try the controls for setting up a broadcast.",
+    content: <FormShowcase />,
+  },
+  {
+    name: "Navigation",
+    text: "Move between sections of a broadcast workspace.",
+    content: <NavShowcase />,
+  },
+  {
+    name: "Broadcasts",
+    text: "Compare channel layouts and follow a sample creator.",
+    content: <StreamShowcase />,
+  },
+  {
+    name: "Chat",
+    text: "Send a sample message to the studio.",
+    content: <ChatShowcase />,
+  },
+  {
+    name: "Analytics",
+    text: "A snapshot of audience and engagement metrics.",
+    content: <AnalyticsShowcase />,
+  },
+];
 export default function ComponentsPage() {
+  const [active, setActive] = useState(0);
+  const current = sections[active];
   return (
-    <main className="p-6 max-w-7xl mx-auto">
-      <header className="mb-8">
-        <DevConsoleFilter />
-        <h1 className="text-3xl font-semibold">Component Library</h1>
-        <p className="text-slate-500 mt-2">Reusable UI components used throughout LiveCast.</p>
-      </header>
-
-      <ComponentSection title="Core UI">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <ButtonShowcase />
-          <InputShowcase />
-          <CardShowcase />
-          <AvatarBadgeShowcase />
+    <main id="content" className="wrap kit">
+      <header className="kit-head">
+        <div>
+          <span className="eyebrow">
+            <i className="signal-dot" /> LiveCast / Design system
+          </span>
+          <h1 className="kit-title">
+            Component library<span>.</span>
+          </h1>
+          <p>A field guide to the pieces behind every broadcast.</p>
         </div>
-      </ComponentSection>
-
-      <ComponentSection title="Forms">
-        <FormShowcase />
-      </ComponentSection>
-
-      <ComponentSection title="Navigation">
-        <NavShowcase />
-      </ComponentSection>
-
-      <ComponentSection title="Stream Components">
-        <StreamShowcase />
-      </ComponentSection>
-
-      <ComponentSection title="Chat">
-        <ChatShowcase />
-      </ComponentSection>
-
-      <ComponentSection title="Analytics">
-        <AnalyticsShowcase />
-      </ComponentSection>
-
-      <footer className="mt-8 text-sm text-slate-500">This page is for development use only.</footer>
+        <div className="kit-swatches" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+          <i />
+        </div>
+      </header>
+      <div className="kit-body">
+        <nav className="kit-index" aria-label="Component families">
+          <strong className="eyebrow">Collection index</strong>
+          {sections.map((s, i) => (
+            <button
+              type="button"
+              key={s.name}
+              aria-pressed={i === active}
+              onClick={() => setActive(i)}
+            >
+              <span>{String(i + 1).padStart(2, "0")}</span>
+              {s.name}
+            </button>
+          ))}
+        </nav>
+        <section aria-labelledby="kit-family" className="kit-family">
+          <div className="eyebrow">Collection / 0{active + 1}</div>
+          <h2 id="kit-family">{current.name}</h2>
+          <p>{current.text}</p>
+          {current.content}
+        </section>
+      </div>
     </main>
   );
 }
