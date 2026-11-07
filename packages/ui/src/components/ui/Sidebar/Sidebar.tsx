@@ -1,7 +1,7 @@
 import * as React from "react";
 import clsx from "clsx";
 
-export type SidebarProps = React.HTMLAttributes<HTMLElement> & {
+export type SidebarProps = Omit<React.HTMLAttributes<HTMLElement>, "onToggle"> & {
   collapsed?: boolean;
   onToggle?: (collapsed: boolean) => void;
 };

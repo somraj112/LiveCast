@@ -1,18 +1,15 @@
-"use client";
-import React from "react";
 import { Card } from "@streamline/ui";
 import ComponentPreview from "../_components/ComponentPreview";
-
-export const CardShowcase = () => {
+export default function CardShowcase() {
   return (
-    <ComponentPreview title="Cards">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-4">Normal card content</Card>
-        <Card className="p-4 hover:shadow-lg transition">Interactive card (hover)</Card>
-        <Card className="p-6">Detailed card with more padding</Card>
-      </div>
+    <ComponentPreview title="Surfaces">
+      <Card border shadow={false} className="p-4">
+        <span className="eyebrow">Channel 01 / Music</span>
+        <h4 className="text-2xl font-bold tracking-tight mt-3">
+          After Hours Radio
+        </h4>
+        <p className="text-sm mt-1">Studio Meridian’s vinyl listening room.</p>
+      </Card>
     </ComponentPreview>
   );
-};
-
-export default CardShowcase;
+}

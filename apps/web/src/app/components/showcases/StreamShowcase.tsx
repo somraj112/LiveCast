@@ -1,49 +1,48 @@
 "use client";
-import React from "react";
-import { StreamCard, CreatorCard, LiveBadge, ViewerCount, StreamThumbnail, StreamListSkeleton } from "@streamline/ui";
+import { useState } from "react";
+import {
+  StreamCard,
+  CreatorCard,
+  LiveBadge,
+  ViewerCount,
+} from "@streamline/ui";
+import { programs, artwork } from "../../_ui/programs";
 import ComponentPreview from "../_components/ComponentPreview";
-
-const mock = {
-  title: "Building LiveCast",
-  creatorName: "Somraj",
-  category: "Coding",
-  viewers: 1243,
-  thumbnail: "/sample-thumb.jpg",
-  creatorAvatar: "/avatar.jpg"
-};
-
-export const StreamShowcase = () => {
+export default function StreamShowcase() {
+  const [follow, setFollow] = useState(false);
+  const p = programs[1],
+    data = {
+      title: p.title,
+      creatorName: p.creator,
+      category: p.category,
+      viewers: p.viewers,
+      thumbnail: artwork(p),
+    };
   return (
-    <ComponentPreview title="Stream Components">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <StreamCard {...mock} isLive />
-        <StreamCard {...mock} variant="compact" />
-        <StreamCard {...mock} variant="detailed" />
-
-        <div>
-          <CreatorCard username={mock.creatorName} followers={1234} avatarSrc={mock.creatorAvatar} />
-        </div>
-
-        <div className="flex items-center gap-3">
-          <LiveBadge variant="live" />
+    <div className="kit-grid">
+      <ComponentPreview title="Standard channel">
+        <StreamCard {...data} isLive />
+      </ComponentPreview>
+      <ComponentPreview title="Detailed channel">
+        <StreamCard {...data} variant="detailed" />
+      </ComponentPreview>
+      <ComponentPreview title="Compact channel">
+        <StreamCard {...data} variant="compact" />
+      </ComponentPreview>
+      <ComponentPreview title="Creator & status">
+        <CreatorCard
+          username={p.creator}
+          followers={follow ? 1235 : 1234}
+          followed={follow}
+          onFollow={() => setFollow(!follow)}
+        />
+        <div className="flex flex-wrap items-center gap-2 mt-5">
+          <LiveBadge />
           <LiveBadge variant="offline" />
           <LiveBadge variant="ended" />
+          <ViewerCount count={p.viewers} />
         </div>
-
-        <div>
-          <ViewerCount count={mock.viewers} />
-        </div>
-
-        <div>
-          <StreamThumbnail src={mock.thumbnail} alt={mock.title} />
-        </div>
-
-        <div>
-          <StreamListSkeleton count={4} />
-        </div>
-      </div>
-    </ComponentPreview>
+      </ComponentPreview>
+    </div>
   );
-};
-
-export default StreamShowcase;
+}
