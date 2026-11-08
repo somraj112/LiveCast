@@ -1,13 +1,232 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum UserRole {
+  VIEWER
+  CREATOR
+  MODERATOR
+}
+
+enum StreamStatus {
+  SCHEDULED
+  LIVE
+  ENDED
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}
+
+enum NotificationType {
+  LIVE
+  FOLLOW
+  SYSTEM
+  REMINDER
+}
+
+model User {
+  id           String   @id @default(uuid()) @map("user_id") @db.Uuid
+  username     String   @unique @db.VarChar(50)
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash")
+  profileImage String?  @map("profile_image")
+  bio          String?
+  role         UserRole @default(VIEWER)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  streams               Stream[]
+  following             Follow[]       @relation("Follower")
+  followers             Follow[]       @relation("Creator")
+  chatMessages          ChatMessage[]
+  notificationsReceived Notification[] @relation("NotificationReceiver")
+  notificationsSent     Notification[] @relation("NotificationSender")
+  viewHistory           ViewHistory[]
+  moderatedStreams      Moderator[]
+  bans                  Ban[]
+
+  @@map("users")
+}
+
+model Follow {
+  id         String   @id @default(uuid()) @db.Uuid
+  followerId String   @map("follower_id") @db.Uuid
+  creatorId  String   @map("creator_id") @db.Uuid
+  followedAt DateTime @default(now()) @map("followed_at")
+
+  follower User @relation("Follower", fields: [followerId], references: [id], onDelete: Cascade)
+  creator  User @relation("Creator", fields: [creatorId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, creatorId])
+  @@index([creatorId])
+  @@map("follows")
+}
+
+model Category {
+  id   String  @id @default(uuid()) @db.Uuid
+  name String  @unique @db.VarChar(100)
+  icon String?
+
+  streams Stream[]
+
+  @@map("categories")
+}
+
+model Stream {
+  id          String       @id @default(uuid()) @db.Uuid
+  creatorId   String       @map("creator_id") @db.Uuid
+  title       String       @db.VarChar(150)
+  description String?
+  categoryId  String       @map("category_id") @db.Uuid
+  visibility  Visibility   @default(PUBLIC)
+  status      StreamStatus @default(SCHEDULED)
+  streamKey   String       @unique @default(uuid()) @map("stream_key") @db.Uuid
+  startedAt   DateTime?    @map("started_at")
+  endedAt     DateTime?    @map("ended_at")
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  creator      User             @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  category     Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  chatMessages ChatMessage[]
+  recording    Recording?
+  analytics    StreamAnalytics?
+  moderators   Moderator[]
+  bans         Ban[]
+  viewHistory  ViewHistory[]
+  tags         StreamTagMap[]
+
+  @@index([creatorId, createdAt])
+  @@index([categoryId, status])
+  @@index([status, visibility, createdAt])
+  @@map("streams")
+}
+
+model Notification {
+  id         String           @id @default(uuid()) @db.Uuid
+  receiverId String           @map("receiver_id") @db.Uuid
+  senderId   String?          @map("sender_id") @db.Uuid
+  type       NotificationType
+  title      String           @db.VarChar(150)
+  body       String
+  isRead     Boolean          @default(false) @map("is_read")
+  createdAt  DateTime         @default(now()) @map("created_at")
+
+  receiver User  @relation("NotificationReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender   User? @relation("NotificationSender", fields: [senderId], references: [id], onDelete: SetNull)
+
+  @@index([receiverId, isRead, createdAt])
+  @@index([senderId])
+  @@map("notifications")
+}
+
+model ChatMessage {
+  id       String   @id @default(uuid()) @db.Uuid
+  streamId String   @map("stream_id") @db.Uuid
+  senderId String   @map("sender_id") @db.Uuid
+  message  String
+  sentAt   DateTime @default(now()) @map("sent_at")
+  deleted  Boolean  @default(false)
+
+  stream Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  sender User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([streamId, sentAt])
+  @@index([senderId])
+  @@map("chat_messages")
+}
+
+model ViewHistory {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @map("user_id") @db.Uuid
+  streamId      String   @map("stream_id") @db.Uuid
+  watchDuration Int      @default(0) @map("watch_duration")
+  watchedAt     DateTime @default(now()) @map("watched_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stream Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+
+  @@index([userId, watchedAt])
+  @@index([streamId, watchedAt])
+  @@map("view_history")
+}
+
+model Recording {
+  id        String   @id @default(uuid()) @db.Uuid
+  streamId  String   @unique @map("stream_id") @db.Uuid
+  videoUrl  String   @map("video_url")
+  thumbnail String
+  duration  Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  stream Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+
+  @@map("recordings")
+}
+
+model StreamAnalytics {
+  id             String @id @default(uuid()) @db.Uuid
+  streamId       String @unique @map("stream_id") @db.Uuid
+  peakViewers    Int    @default(0) @map("peak_viewers")
+  totalViews     Int    @default(0) @map("total_views")
+  totalWatchTime Int    @default(0) @map("total_watch_time")
+  totalMessages  Int    @default(0) @map("total_messages")
+
+  stream Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+
+  @@map("stream_analytics")
+}
+
+model Ban {
+  id       String   @id @default(uuid()) @db.Uuid
+  streamId String   @map("stream_id") @db.Uuid
+  userId   String   @map("user_id") @db.Uuid
+  reason   String?
+  bannedAt DateTime @default(now()) @map("banned_at")
+
+  stream Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([streamId, userId])
+  @@index([userId])
+  @@map("bans")
+}
+
+model Moderator {
+  id       String @id @default(uuid()) @db.Uuid
+  streamId String @map("stream_id") @db.Uuid
+  userId   String @map("user_id") @db.Uuid
+
+  stream Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([streamId, userId])
+  @@index([userId])
+  @@map("moderators")
+}
+
+model StreamTag {
+  id   String @id @default(uuid()) @db.Uuid
+  name String @unique @db.VarChar(50)
+
+  streams StreamTagMap[]
+
+  @@map("stream_tags")
+}
+
+model StreamTagMap {
+  streamId String @map("stream_id") @db.Uuid
+  tagId    String @map("tag_id") @db.Uuid
+
+  stream Stream    @relation(fields: [streamId], references: [id], onDelete: Cascade)
+  tag    StreamTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([streamId, tagId])
+  @@index([tagId])
+  @@map("stream_tag_map")
 }
