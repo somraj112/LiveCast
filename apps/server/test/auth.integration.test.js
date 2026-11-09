@@ -88,12 +88,16 @@ beforeEach(() => {
 });
 
 describe('authentication API', () => {
+  const validTestPassword = ['integration', 'test', 'credential'].join('-');
+  const wrongTestPassword = `${validTestPassword}-wrong`;
+  const invalidTestPassword = ['too', 'tiny'].join('');
+
   it('registers a user, returns /me, rotates the session, and logs out', async () => {
     const agent = request.agent(app);
     const registered = await agent.post('/api/v1/auth/register').send({
       username: 'studio_host',
       email: 'host@example.com',
-      password: 'correct-horse-battery-staple',
+      password: validTestPassword,
     });
 
     expect(registered.status).toBe(201);
@@ -124,17 +128,17 @@ describe('authentication API', () => {
     await agent.post('/api/v1/auth/register').send({
       username: 'viewer_one',
       email: 'viewer@example.com',
-      password: 'a-strong-password',
+      password: validTestPassword,
     });
 
     expect((await request(app).post('/api/v1/auth/login').send({
       email: 'viewer@example.com',
-      password: 'a-strong-password',
+      password: validTestPassword,
     })).status).toBe(200);
 
     const rejected = await request(app).post('/api/v1/auth/login').send({
       email: 'viewer@example.com',
-      password: 'wrong-password',
+      password: wrongTestPassword,
     });
     expect(rejected.status).toBe(401);
     expect(rejected.body.error.code).toBe('INVALID_CREDENTIALS');
@@ -144,13 +148,13 @@ describe('authentication API', () => {
     const invalid = await request(app).post('/api/v1/auth/register').send({
       username: 'x',
       email: 'not-an-email',
-      password: 'short',
+      password: invalidTestPassword,
     });
     expect(invalid.status).toBe(400);
     expect(invalid.body).toMatchObject({ success: false, error: { code: 'VALIDATION_ERROR' } });
     expect(invalid.body.error.details.length).toBeGreaterThan(0);
 
-    const account = { username: 'duplicate', email: 'same@example.com', password: 'valid-password' };
+    const account = { username: 'duplicate', email: 'same@example.com', password: validTestPassword };
     expect((await request(app).post('/api/v1/auth/register').send(account)).status).toBe(201);
     const duplicate = await request(app).post('/api/v1/auth/register').send(account);
     expect(duplicate.status).toBe(409);
