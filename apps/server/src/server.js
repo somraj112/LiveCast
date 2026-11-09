@@ -6,7 +6,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 const server = app.listen(PORT, () => {
   console.log(
-    `🚀 StreamLine server running on http://localhost:${PORT} in ${NODE_ENV} mode`
+    `LiveCast server running on http://localhost:${PORT} in ${NODE_ENV} mode`
   );
 });
 
