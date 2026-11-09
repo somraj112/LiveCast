@@ -11,12 +11,35 @@ http://localhost:3001/api/v1
 All authenticated endpoints require a JWT token in the Authorization header:
 
 ```
-Authorization: Bearer {token}
+Authorization: Bearer {access_token}
 ```
 
 ## Endpoints
 
 ### Authentication
+
+#### Register
+```
+POST /auth/register
+Content-Type: application/json
+
+{
+  "username": "creator_name",
+  "email": "user@example.com",
+  "password": "a-secure-password"
+}
+
+Response: 201 Created
+{
+  "success": true,
+  "data": {
+    "accessToken": "short_lived_jwt",
+    "user": { ... }
+  }
+}
+```
+
+The rotating refresh token is returned as a secure HTTP-only cookie rather than in JSON.
 
 #### Login
 ```
@@ -25,46 +48,41 @@ Content-Type: application/json
 
 {
   "email": "user@example.com",
-  "password": "password123"
+  "password": "a-secure-password"
 }
+
+Response: 200 OK (same data shape and refresh cookie as register)
+```
+
+#### Refresh
+```
+POST /auth/refresh
+Cookie: livecast_refresh={refresh_token}
+
+Response: 200 OK (rotates the refresh cookie and returns a new access token)
+```
+
+#### Current user
+```
+GET /auth/me
+Authorization: Bearer {access_token}
 
 Response: 200 OK
 {
-  "token": "jwt_token_here",
-  "user": {
-    "id": "user_id",
-    "email": "user@example.com",
-    "name": "User Name"
-  }
-}
-```
-
-#### Register
-```
-POST /auth/register
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password123",
-  "name": "User Name"
-}
-
-Response: 201 Created
-{
-  "token": "jwt_token_here",
-  "user": { ... }
+  "success": true,
+  "data": { "user": { ... } }
 }
 ```
 
 #### Logout
 ```
 POST /auth/logout
-Authorization: Bearer {token}
+Cookie: livecast_refresh={refresh_token}
 
 Response: 200 OK
 {
-  "message": "Logged out successfully"
+  "success": true,
+  "data": { "message": "Logged out successfully." }
 }
 ```
 

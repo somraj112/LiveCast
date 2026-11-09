@@ -1,27 +1,46 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Button, Input, PasswordInput } from "@streamline/ui";
+import { AuthApiError, login, register } from "@/lib/auth";
 
 export default function AccountForm({ signup = false }: { signup?: boolean }) {
-  const [error, setError] = useState(""),
-    [done, setDone] = useState(false);
-  function submit(e: FormEvent<HTMLFormElement>) {
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     const form = e.currentTarget;
     const data = new FormData(form);
-    if (signup && String(data.get("name")).trim().length < 2) {
-      setError("Enter a display name with at least two characters.");
+    const username = String(data.get("username") || "").trim();
+    const email = String(data.get("email") || "").trim();
+    const password = String(data.get("password") || "");
+
+    if (signup && username.length < 3) {
+      setError("Enter a username with at least three characters.");
       return;
     }
-    if (signup && data.get("password") !== data.get("confirm")) {
+    if (signup && password !== data.get("confirm")) {
       setError("The passwords don’t match. Re-enter the confirmation.");
       return;
     }
-    form.reset();
-    setDone(true);
+
+    setLoading(true);
+    try {
+      if (signup) await register({ username, email, password });
+      else await login({ email, password });
+      form.reset();
+      router.push("/");
+      router.refresh();
+    } catch (cause) {
+      setError(cause instanceof AuthApiError ? cause.message : "LiveCast could not sign you in. Try again.");
+    } finally {
+      setLoading(false);
+    }
   }
   return (
     <main id="content" className="wrap account">
@@ -47,23 +66,18 @@ export default function AccountForm({ signup = false }: { signup?: boolean }) {
             ? "Create your profile for the broadcast guide."
             : "Sign in to your LiveCast profile."}
         </p>
-        {done ? (
-          <div role="status" className="form-notice">
-            <strong>Demo form complete.</strong>
-            <p>No account or session was created.</p>
-            <Link href="/">Return to Discover →</Link>
-          </div>
-        ) : (
-          <form onSubmit={submit} onChange={() => setError("")}>
+          <form onSubmit={submit} onChange={() => setError("")} aria-busy={loading}>
             {signup && (
               <label>
-                Display name
+                Username
                 <Input
-                  name="name"
+                  name="username"
                   required
-                  minLength={2}
+                  minLength={3}
+                  maxLength={50}
+                  pattern="[a-zA-Z0-9_]+"
                   autoComplete="nickname"
-                  placeholder="Your on-air name"
+                  placeholder="your_on_air_name"
                 />
               </label>
             )}
@@ -83,10 +97,11 @@ export default function AccountForm({ signup = false }: { signup?: boolean }) {
                 id="account-password"
                 name="password"
                 required
-                minLength={6}
+                minLength={8}
+                maxLength={72}
                 autoComplete={signup ? "new-password" : "current-password"}
                 placeholder={
-                  signup ? "At least 6 characters" : "Enter your password"
+                  signup ? "At least 8 characters" : "Enter your password"
                 }
               />
             </div>
@@ -97,6 +112,8 @@ export default function AccountForm({ signup = false }: { signup?: boolean }) {
                   id="confirm-password"
                   name="confirm"
                   required
+                  minLength={8}
+                  maxLength={72}
                   autoComplete="new-password"
                   placeholder="Re-enter your password"
                 />
@@ -107,13 +124,12 @@ export default function AccountForm({ signup = false }: { signup?: boolean }) {
                 {error}
               </p>
             )}
-            <Button type="submit" className="account-submit">
-              {signup ? "Create demo profile" : "Log in to demo"}{" "}
+            <Button type="submit" className="account-submit" loading={loading}>
+              {signup ? "Create profile" : "Log in"}{" "}
               <ArrowRight size={16} />
             </Button>
-            <small>Demo form only. Use sample details.</small>
+            <small>Your refresh session is secured in an HTTP-only cookie.</small>
           </form>
-        )}
         <div className="switch-account">
           {signup ? "Already have a profile?" : "New to LiveCast?"}{" "}
           <Link href={signup ? "/login" : "/signup"}>
