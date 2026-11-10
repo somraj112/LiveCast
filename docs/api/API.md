@@ -86,6 +86,81 @@ Response: 200 OK
 }
 ```
 
+### Stream management
+
+Creator endpoints require a `CREATOR` access token. Stream responses from list, create,
+update, schedule, start, and end never contain the stream key.
+
+#### Creator dashboard list
+```http
+GET /creator/streams
+Authorization: Bearer {access_token}
+```
+
+#### Create a draft
+```http
+POST /creator/streams
+Authorization: Bearer {access_token}
+Content-Type: application/json
+
+{
+  "title": "Friday night studio session",
+  "description": "A live set from the studio.",
+  "categoryId": "category_uuid",
+  "visibility": "PUBLIC"
+}
+```
+
+#### Update stream details
+```http
+PATCH /creator/streams/{stream_id}
+Authorization: Bearer {access_token}
+```
+
+Updates are allowed only while the stream is `DRAFT` or `SCHEDULED`.
+
+#### Schedule, start, and end
+```http
+POST /creator/streams/{stream_id}/schedule
+{ "scheduledAt": "2026-11-12T14:30:00.000Z" }
+
+POST /creator/streams/{stream_id}/start
+POST /creator/streams/{stream_id}/end
+```
+
+Valid transitions are `DRAFT → SCHEDULED → LIVE → ENDED`; creators may also start a
+draft immediately. Starting an ended stream or ending a non-live stream returns `409`.
+
+#### Delete a stream
+```http
+DELETE /creator/streams/{stream_id}
+Authorization: Bearer {access_token}
+```
+
+Live streams must be ended before deletion.
+
+#### Retrieve the private stream key
+```http
+GET /creator/streams/{stream_id}/stream-key
+Authorization: Bearer {access_token}
+```
+
+This ownership-protected response uses `Cache-Control: no-store`. The key is never
+included in public endpoints or creator dashboard list responses.
+
+#### Public stream details
+```http
+GET /streams/{stream_id}
+```
+
+Returns scheduled, live, or ended `PUBLIC`/`UNLISTED` streams. Draft and private streams
+return `404`, and the response never contains the stream key.
+
+#### Categories
+```http
+GET /categories
+```
+
 ### Content
 
 #### Get All Videos
