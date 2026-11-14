@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import healthRoutes from './routes/health.js';
 import authRoutes from './routes/auth.js';
 import { categoryRouter, creatorStreamRouter, publicStreamRouter } from './routes/stream.js';
+import { creatorProfileRouter, discoveryRouter, viewerRouter } from './routes/discovery.js';
 import { errorHandler, notFoundHandler } from './middleware/error.js';
 
 const app = express();
@@ -35,6 +36,9 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/categories', categoryRouter);
 app.use('/api/v1/streams', publicStreamRouter);
 app.use('/api/v1/creator/streams', creatorStreamRouter);
+app.use('/api/v1/discovery', discoveryRouter);
+app.use('/api/v1/creators', creatorProfileRouter);
+app.use('/api/v1/viewer', viewerRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
