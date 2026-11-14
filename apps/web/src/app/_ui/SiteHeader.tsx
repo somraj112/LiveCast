@@ -22,6 +22,7 @@ export function SiteHeader() {
         <nav aria-label="Main navigation">
           {[
             ["/", "Discover"],
+            ["/history", "History"],
             ["/creator", "Creator studio"],
             ["/components", "Component library"],
           ].map(([href, label]) => (

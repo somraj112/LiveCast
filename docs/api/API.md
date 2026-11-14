@@ -161,6 +161,58 @@ return `404`, and the response never contains the stream key.
 GET /categories
 ```
 
+### Discovery and profiles
+
+#### Live and scheduled directory
+```http
+GET /discovery/streams?status=LIVE,SCHEDULED&categoryId={uuid}&tags=music,vinyl&search=studio&page=1&limit=12
+```
+
+Only `PUBLIC` live and scheduled streams appear in discovery. Search matches stream titles,
+descriptions, and creator usernames. Category and tag filters can be combined, and the
+response includes `page`, `limit`, `total`, `totalPages`, and `hasNextPage`. Public results
+never include stream keys.
+
+#### Tags
+```http
+GET /discovery/tags?search=music
+```
+
+#### Creator profile
+```http
+GET /creators/{username}
+```
+
+Returns the creator's public profile, follower and public-stream counts, and up to 12 recent
+public broadcasts. Email addresses and stream keys are not exposed.
+
+#### Follow a creator
+```http
+GET /creators/{creator_id}/follow-status
+POST /creators/{creator_id}/follow
+DELETE /creators/{creator_id}/follow
+Authorization: Bearer {access_token}
+```
+
+Following and unfollowing are idempotent. Accounts cannot follow themselves, and the target
+must have the `CREATOR` role.
+
+#### Viewer history
+```http
+GET /viewer/history?page=1&limit=12
+POST /viewer/history
+Authorization: Bearer {access_token}
+Content-Type: application/json
+
+{
+  "streamId": "stream_uuid",
+  "watchDuration": 45
+}
+```
+
+History is private to the authenticated account. Reopening a stream updates the latest
+history item and increments its watch duration. Draft and private streams cannot be recorded.
+
 ### Content
 
 #### Get All Videos
