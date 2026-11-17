@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { CalendarClock, Copy, KeyRound, Pencil, Radio, Square, Trash2 } from "lucide-react";
 import { Button, Input } from "@streamline/ui";
@@ -344,6 +345,7 @@ export default function CreatorDashboard() {
                 ) : null}
 
                 <div className="stream-actions">
+                  {stream.status === "LIVE" ? <Link className="lc-button lc-button--ghost" href={`/streams/${stream.id}`}>Open chat & moderation</Link> : null}
                   {editable ? (
                     <Button type="button" variant="ghost" onClick={() => beginEdit(stream)} icon={<Pencil size={15} />}>
                       Edit

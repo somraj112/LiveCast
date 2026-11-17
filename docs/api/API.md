@@ -16,6 +16,9 @@ Authorization: Bearer {access_token}
 
 ## Endpoints
 
+Realtime room events, authentication, chat, viewer counts, and moderation are documented in
+[REALTIME.md](./REALTIME.md).
+
 ### Authentication
 
 #### Register
