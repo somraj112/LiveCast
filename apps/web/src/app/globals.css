@@ -794,6 +794,20 @@ a {
   font-weight: 400;
 }
 
+.live-room { padding-block: 40px 70px; max-width: 900px; }
+.live-room h1 { font-size: clamp(38px, 6vw, 64px); letter-spacing: -0.06em; margin: 15px 0; }
+.live-chat { border: 1px solid var(--lc-rule); border-radius: 9px; margin-block: 25px; background: var(--lc-panel); }
+.live-messages { list-style: none; padding: 20px; margin: 0; height: 440px; overflow-y: auto; }
+.live-messages li { border-bottom: 1px solid var(--lc-rule); padding: 14px 0; overflow-wrap: anywhere; }
+.live-messages time { font-size: 11px; color: var(--lc-muted); }
+.live-messages p { white-space: pre-wrap; margin-block: 8px; }
+.live-composer { display: grid; gap: 10px; padding: 20px; border-top: 1px solid var(--lc-rule); }
+.live-composer textarea { border: 1px solid var(--lc-rule); border-radius: 5px; padding: 12px; min-height: 80px; resize: vertical; background: white; }
+.live-composer .lc-button { justify-self: end; }
+.moderation-actions { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: #91251d; }
+.moderation-actions button { cursor: pointer; }
+.live-bans li { margin-block: 10px; }
+
 .discovery-hero {
   display: grid;
   grid-template-columns: 1fr minmax(360px, 0.8fr);
