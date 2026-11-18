@@ -113,6 +113,7 @@ model Stream {
   category     Category         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   chatMessages ChatMessage[]
   recording    Recording?
+  broadcast    Broadcast?
   analytics    StreamAnalytics?
   moderators   Moderator[]
   bans         Ban[]
@@ -182,10 +183,32 @@ model Recording {
   thumbnail String
   duration  Int
   createdAt DateTime @default(now()) @map("created_at")
+  muxAssetId String? @unique @map("mux_asset_id")
+  playbackId String? @map("playback_id")
 
   stream Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
 
   @@map("recordings")
+}
+
+model Broadcast {
+  streamId      String @id @map("stream_id") @db.Uuid
+  muxStreamId   String? @unique @map("mux_stream_id")
+  playbackId    String? @map("playback_id")
+  keyCiphertext String? @map("key_ciphertext")
+  lastEventAt   DateTime? @map("last_event_at")
+  stopRequested Boolean @default(false) @map("stop_requested")
+  createdAt     DateTime @default(now()) @map("created_at")
+  stream        Stream @relation(fields: [streamId], references: [id], onDelete: Cascade)
+
+  @@map("broadcasts")
+}
+
+model ProviderEvent {
+  id          String @id
+  processedAt DateTime @default(now()) @map("processed_at")
+
+  @@map("provider_events")
 }
 
 model StreamAnalytics {

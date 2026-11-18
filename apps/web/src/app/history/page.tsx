@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Clock3, History } from "lucide-react";
 import { Button, StreamCard } from "@streamline/ui";
@@ -10,6 +11,7 @@ import { listViewerHistory, streamArtwork, type HistoryEntry, type Pagination } 
 const formatDate = new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" });
 
 export default function ViewerHistoryPage() {
+  const router = useRouter();
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [page, setPage] = useState(1);
@@ -60,6 +62,7 @@ export default function ViewerHistoryPage() {
               creatorName={entry.stream.creator.username}
               creatorAvatar={entry.stream.creator.profileImage || undefined}
               isLive={entry.stream.status === "LIVE"}
+              onClick={() => router.push(`/streams/${entry.stream.id}`)}
             />
             <p><Clock3 size={14} /> Opened {formatDate.format(new Date(entry.watchedAt))}</p>
           </article>

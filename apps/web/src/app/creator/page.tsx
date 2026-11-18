@@ -15,6 +15,8 @@ import {
   scheduleStream,
   startStream,
   updateStream,
+  prepareBroadcast,
+  stopBroadcast,
   type Category,
   type CreatorStream,
   type StreamInput,
@@ -45,6 +47,8 @@ export default function CreatorDashboard() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [scheduleTimes, setScheduleTimes] = useState<Record<string, string>>({});
   const [streamKeys, setStreamKeys] = useState<Record<string, string>>({});
+  const [ingest, setIngest] = useState<Record<string, { ingestUrl: string; streamKey: string }>>({});
+  const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeAction, setActiveAction] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -176,6 +180,29 @@ export default function CreatorDashboard() {
     }
   }
 
+  async function configureBroadcast(streamId: string) {
+    setError("");
+    setActiveAction(`broadcast:${streamId}`);
+    try {
+      const details = await prepareBroadcast(streamId);
+      setIngest((current) => ({ ...current, [streamId]: details }));
+      setStreams(await listCreatorStreams());
+      setNotice("Paste the server URL and stream key into OBS, then start streaming there. Refresh the studio to see the confirmed status.");
+    } catch (cause) { setError(errorMessage(cause)); }
+    finally { setActiveAction(null); }
+  }
+
+  async function stopProviderBroadcast(streamId: string) {
+    setError("");
+    setActiveAction(`stop:${streamId}`);
+    try {
+      await stopBroadcast(streamId);
+      setNotice("Stop requested. Stop streaming in OBS and wait for confirmation; the recording will appear after processing.");
+      setStreams(await listCreatorStreams());
+    } catch (cause) { setError(errorMessage(cause)); }
+    finally { setActiveAction(null); }
+  }
+
   return (
     <main id="content" className="wrap creator-dashboard">
       <header className="creator-heading">
@@ -191,6 +218,7 @@ export default function CreatorDashboard() {
       </header>
 
       {error ? <p className="dashboard-alert" role="alert">{error}</p> : null}
+      {notice ? <p className="form-notice" role="status">{notice}</p> : null}
 
       <section className="stream-editor" aria-labelledby="stream-editor-title">
         <div>
@@ -336,7 +364,13 @@ export default function CreatorDashboard() {
                   </div>
                 ) : null}
 
-                {streamKeys[stream.id] ? (
+                {ingest[stream.id] ? <div className="stream-key">
+                  <span>OBS server</span><code>{ingest[stream.id].ingestUrl}</code>
+                  <span>Private ingest key</span><code>{ingest[stream.id].streamKey}</code>
+                  <small>Anyone with this key can broadcast to your channel. Keep it secret.</small>
+                  <Button variant="ghost" onClick={() => setIngest((current) => { const next = { ...current }; delete next[stream.id]; return next; })}>Hide ingest details</Button>
+                </div> : null}
+                {streamKeys[stream.id] && !stream.broadcast ? (
                   <div className="stream-key" role="status">
                     <span>Private stream key</span>
                     <code>{streamKeys[stream.id]}</code>
@@ -345,23 +379,27 @@ export default function CreatorDashboard() {
                 ) : null}
 
                 <div className="stream-actions">
-                  {stream.status === "LIVE" ? <Link className="lc-button lc-button--ghost" href={`/streams/${stream.id}`}>Open chat & moderation</Link> : null}
+                  {stream.status !== "DRAFT" ? <Link className="lc-button lc-button--ghost" href={`/streams/${stream.id}`}>Watch broadcast</Link> : null}
+                  {editable || (stream.status === "LIVE" && stream.broadcast && !stream.broadcast.stopRequested) ? <Button
+                    loading={activeAction === `broadcast:${stream.id}`} onClick={() => void configureBroadcast(stream.id)}
+                  >{stream.broadcast ? "Show OBS setup" : "Set up OBS broadcast"}</Button> : null}
+                  {stream.broadcast && stream.status === "LIVE" ? <Button variant="secondary" loading={activeAction === `stop:${stream.id}`} onClick={() => void stopProviderBroadcast(stream.id)}>Stop broadcast</Button> : null}
                   {editable ? (
                     <Button type="button" variant="ghost" onClick={() => beginEdit(stream)} icon={<Pencil size={15} />}>
                       Edit
                     </Button>
                   ) : null}
-                  {editable ? (
+                  {editable && !stream.broadcast ? (
                     <Button
                       type="button"
                       loading={activeAction === `start:${stream.id}`}
                       onClick={() => void runTransition(stream.id, "start")}
                       icon={<Radio size={15} />}
                     >
-                      Go live
+                      Start demo room
                     </Button>
                   ) : null}
-                  {stream.status === "LIVE" ? (
+                  {stream.status === "LIVE" && !stream.broadcast ? (
                     <Button
                       type="button"
                       variant="secondary"
@@ -372,7 +410,7 @@ export default function CreatorDashboard() {
                       End stream
                     </Button>
                   ) : null}
-                  <Button
+                  {!stream.broadcast ? <Button
                     type="button"
                     variant="ghost"
                     loading={activeAction === `key:${stream.id}`}
@@ -380,7 +418,7 @@ export default function CreatorDashboard() {
                     icon={streamKeys[stream.id] ? <Copy size={15} /> : <KeyRound size={15} />}
                   >
                     {streamKeys[stream.id] ? "Copy key" : "Reveal key"}
-                  </Button>
+                  </Button> : null}
                   {stream.status !== "LIVE" ? (
                     <Button
                       type="button"

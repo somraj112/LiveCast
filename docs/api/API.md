@@ -16,6 +16,9 @@ Authorization: Bearer {access_token}
 
 ## Endpoints
 
+OBS ingest, HLS playback, provider status callbacks, and finalized recordings are documented
+in [BROADCASTING.md](./BROADCASTING.md).
+
 Realtime room events, authentication, chat, viewer counts, and moderation are documented in
 [REALTIME.md](./REALTIME.md).
 

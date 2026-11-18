@@ -8,6 +8,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 const server = createServer(app);
 const io = createRealtimeServer(server);
+app.set('realtime', io);
 server.listen(PORT, () => {
   console.log(
     `LiveCast server running on http://localhost:${PORT} in ${NODE_ENV} mode`

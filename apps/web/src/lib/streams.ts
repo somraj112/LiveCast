@@ -17,6 +17,7 @@ export type CreatorStream = {
   endedAt: string | null;
   createdAt: string;
   category: Category;
+  broadcast?: { streamId: string; muxStreamId: string | null; stopRequested: boolean } | null;
 };
 
 export type StreamInput = {
@@ -75,4 +76,12 @@ export async function getStreamKey(streamId: string) {
   return (await authenticatedRequest<{ id: string; streamKey: string }>(
     `/creator/streams/${streamId}/stream-key`
   )).streamKey;
+}
+
+export async function prepareBroadcast(streamId: string) {
+  return authenticatedRequest<{ ingestUrl: string; streamKey: string }>(`/creator/streams/${streamId}/broadcast`, { method: "POST" });
+}
+
+export async function stopBroadcast(streamId: string) {
+  return authenticatedRequest<{ stopping: boolean }>(`/creator/streams/${streamId}/broadcast/stop`, { method: "POST" });
 }
