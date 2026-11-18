@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Radio, UserCheck, UserPlus } from "lucide-react";
 import { Button, StreamCard } from "@streamline/ui";
 import { AuthApiError } from "@/lib/auth";
@@ -15,6 +15,7 @@ import {
 } from "@/lib/discovery";
 
 export default function CreatorProfilePage() {
+  const router = useRouter();
   const { username } = useParams<{ username: string }>();
   const [creator, setCreator] = useState<CreatorProfile | null>(null);
   const [following, setFollowingState] = useState(false);
@@ -111,6 +112,7 @@ export default function CreatorProfilePage() {
               creatorName={creator.username}
               creatorAvatar={creator.profileImage || undefined}
               isLive={stream.status === "LIVE"}
+              onClick={() => router.push(`/streams/${stream.id}`)}
             />
           ))}
         </div>

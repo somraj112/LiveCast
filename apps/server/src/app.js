@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.js';
 import { categoryRouter, creatorStreamRouter, publicStreamRouter } from './routes/stream.js';
 import { creatorProfileRouter, discoveryRouter, viewerRouter } from './routes/discovery.js';
 import { errorHandler, notFoundHandler } from './middleware/error.js';
+import { broadcastRouter, muxWebhookRouter, playbackRouter } from './routes/broadcast.js';
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(
 app.use(morgan('combined'));
 
 // Body parsing middleware
+app.use('/api/v1/webhooks/mux', muxWebhookRouter);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -33,6 +35,8 @@ app.use(cookieParser());
 // Routes
 app.use('/api', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/creator/streams/:streamId/broadcast', broadcastRouter);
+app.use('/api/v1/streams/:streamId/playback', playbackRouter);
 app.use('/api/v1/categories', categoryRouter);
 app.use('/api/v1/streams', publicStreamRouter);
 app.use('/api/v1/creator/streams', creatorStreamRouter);

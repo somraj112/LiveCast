@@ -1,5 +1,6 @@
 import prisma from '../config/db.js';
 import { AppError } from '../utils/app-error.js';
+import { removeProviderResources } from './broadcast.js';
 
 const categorySelect = { id: true, name: true, icon: true };
 
@@ -15,6 +16,8 @@ const creatorStreamSelect = {
   endedAt: true,
   createdAt: true,
   category: { select: categorySelect },
+  broadcast: { select: { streamId: true, muxStreamId: true, stopRequested: true } },
+  recording: { select: { muxAssetId: true } },
 };
 
 const publicStreamSelect = {
@@ -119,6 +122,7 @@ export async function scheduleStream(streamId, creatorId, scheduledAtValue) {
 
 export async function startStream(streamId, creatorId) {
   const stream = await findOwnedStream(streamId, creatorId);
+  if (stream.broadcast) throw new AppError(409, 'PROVIDER_MANAGED_STREAM', 'Start sending video from OBS; the provider will mark this stream live.');
   assertStatus(stream, ['DRAFT', 'SCHEDULED'], 'started');
 
   return updateOwnedStream(
@@ -131,6 +135,7 @@ export async function startStream(streamId, creatorId) {
 
 export async function endStream(streamId, creatorId) {
   const stream = await findOwnedStream(streamId, creatorId);
+  if (stream.broadcast) throw new AppError(409, 'PROVIDER_MANAGED_STREAM', 'Use the broadcast stop action and wait for the provider callback.');
   assertStatus(stream, ['LIVE'], 'ended');
 
   return updateOwnedStream(streamId, creatorId, ['LIVE'], { status: 'ENDED', endedAt: new Date() });
@@ -141,6 +146,7 @@ export async function deleteStream(streamId, creatorId) {
   if (stream.status === 'LIVE') {
     throw new AppError(409, 'INVALID_STREAM_TRANSITION', 'End a live stream before deleting it.');
   }
+  await removeProviderResources(stream.broadcast, stream.recording);
   const result = await prisma.stream.deleteMany({
     where: { id: streamId, creatorId, status: { not: 'LIVE' } },
   });

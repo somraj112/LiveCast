@@ -795,6 +795,9 @@ a {
 }
 
 .live-room { padding-block: 40px 70px; max-width: 900px; }
+.broadcast-player { margin-block: 25px; padding: 20px; border: 1px solid var(--lc-rule); border-radius: 9px; }
+.broadcast-player video { width: 100%; aspect-ratio: 16 / 9; background: #151515; border-radius: 6px; }
+.broadcast-player button { text-decoration: underline; cursor: pointer; }
 .live-room h1 { font-size: clamp(38px, 6vw, 64px); letter-spacing: -0.06em; margin: 15px 0; }
 .live-chat { border: 1px solid var(--lc-rule); border-radius: 9px; margin-block: 25px; background: var(--lc-panel); }
 .live-messages { list-style: none; padding: 20px; margin: 0; height: 440px; overflow-y: auto; }

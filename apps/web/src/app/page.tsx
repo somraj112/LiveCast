@@ -191,7 +191,7 @@ export default function Discover() {
             <h2 id="channel-title">{selected.title}</h2>
             <Link className="creator-link" href={`/creators/${selected.creator.username}`}>By {selected.creator.username} →</Link>
             <p>{selected.description || "This creator has not added a description yet."}</p>
-            {selected.status === "LIVE" ? <Link className="lc-button lc-button--primary" href={`/streams/${selected.id}`}>Join live conversation →</Link> : null}
+            <Link className="lc-button lc-button--primary" href={`/streams/${selected.id}`}>{selected.status === "LIVE" ? "Watch live broadcast" : "Open broadcast"} →</Link>
             {selected.tags.length ? <p className="dialog-tags">{selected.tags.map((tag) => `#${tag.name}`).join("  ")}</p> : null}
             <Button variant="ghost" onClick={() => dialog.current?.close()}>Back to the guide <ArrowRight size={15} /></Button>
           </div>

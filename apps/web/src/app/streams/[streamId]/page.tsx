@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { io, type Socket } from "socket.io-client";
 import { Button } from "@streamline/ui";
 import { refreshSession } from "@/lib/auth";
+import { BroadcastPlayer } from "@/app/_ui/BroadcastPlayer";
 
 type Message = { id: string; streamId: string; senderId: string; message: string; sentAt: string; deleted: boolean; sender: { username: string } };
 type Ban = { userId: string; reason: string | null; user: { username: string } };
@@ -68,6 +69,9 @@ export default function StreamRoom() {
     });
     socket.on("stream:viewers", ({ count: next }: { count: number }) => setCount(next));
     socket.on("stream:banned", () => { setConnected(false); setCount(0); setError("You have been banned from this stream."); });
+    socket.on("stream:status", ({ status }: { status: string }) => {
+      if (status === "ENDED") { setConnected(false); setCount(0); setError("The broadcast has ended. You can watch its recording when it is ready."); }
+    });
     socket.on("moderation:banned", (ban: Ban) => setBans((current) => [...current.filter((item) => item.userId !== ban.userId), ban]));
     socket.on("moderation:unbanned", ({ userId: id }: { userId: string }) => setBans((current) => current.filter((item) => item.userId !== id)));
     socket.on("disconnect", (reason) => {
@@ -111,6 +115,7 @@ export default function StreamRoom() {
         <div><span className="eyebrow"><span className="signal-dot" /> Live conversation</span><h1>In the room.</h1></div>
         <Link href="/">Leave stream →</Link>
       </header>
+      <BroadcastPlayer streamId={streamId} />
       <p aria-live="polite">{connected ? "Connected" : "Disconnected"} · {count} {count === 1 ? "viewer" : "viewers"}</p>
       {error ? <p className="dashboard-alert" role="alert">{error} <Link href="/login">Log in</Link></p> : null}
       {!connected ? <Button onClick={() => { socketRef.current?.disconnect(); socketRef.current?.connect(); }}>Reconnect</Button> : null}

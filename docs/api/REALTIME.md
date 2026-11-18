@@ -63,7 +63,9 @@ Room mutations are serialized per stream to order message sends, moderation, and
 snapshots. Before deploying multiple replicas, introduce a shared adapter, shared presence,
 shared rate limits, and cross-process ordering. Persisted messages and bans survive restarts;
 presence does not. Replays are bounded to 50 messages; older-history pagination is not provided.
-Media playback is a separate milestone. Stream status is rechecked on each chat action.
+Media ingest and playback are documented in [BROADCASTING.md](./BROADCASTING.md).
+Stream status is rechecked on each chat action. Provider callbacks emit `stream:status`
+with `{ streamId, status }`; ENDED clears the room's chat memberships.
 
 Run `npm test --workspace @streamline/server` for real client/server Socket.IO tests plus
 the existing API tests. The new suite covers authentication, visibility/status restrictions,
