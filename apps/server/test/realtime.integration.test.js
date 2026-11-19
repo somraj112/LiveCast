@@ -2,16 +2,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createServer } from 'node:http';
 import { io as client } from 'socket.io-client';
 import { randomUUID } from 'node:crypto';
+import { createClient } from 'redis';
+import { createStore } from '../src/infrastructure/store.js';
 vi.mock('../src/config/db.js', () => ({ default: {} }));
 import { createRealtimeServer } from '../src/realtime/index.js';
 import { signAccessToken } from '../src/utils/tokens.js';
 
-const creator = randomUUID();
-const viewer = randomUUID();
-const moderator = randomUUID();
-const stranger = randomUUID();
-const streamId = randomUUID();
-const otherStream = randomUUID();
+let creator, viewer, moderator, stranger, streamId, otherStream;
 let io;
 let server;
 let url;
@@ -20,6 +17,8 @@ let sockets;
 let messages;
 let bans;
 let stream;
+let redis;
+let store;
 
 const once = (socket, event) => new Promise((resolve) => socket.once(event, resolve));
 const emit = (socket, event, input) => socket.timeout(2000).emitWithAck(event, input);
@@ -34,6 +33,7 @@ async function connect(userId, tokenOverride) {
 const join = (socket, id = streamId) => emit(socket, 'stream:join', { streamId: id });
 
 beforeEach(async () => {
+  [creator, viewer, moderator, stranger, streamId, otherStream] = Array.from({ length: 6 }, () => randomUUID());
   process.env.JWT_ACCESS_SECRET = 'realtime-test-access-secret-at-least-32-characters';
   process.env.JWT_REFRESH_SECRET = 'realtime-test-refresh-secret-at-least-32-characters';
   sockets = [];
@@ -65,7 +65,16 @@ beforeEach(async () => {
     },
   };
   server = createServer();
-  io = createRealtimeServer(server, { db });
+  store = createStore();
+  if (process.env.TEST_REDIS_URL) {
+    const redisUrl = new URL(process.env.TEST_REDIS_URL);
+    if (redisUrl.pathname !== '/15') throw new Error('TEST_REDIS_URL must select isolated database /15');
+    redis = createClient({ url: redisUrl.toString() });
+    redis.on('error', () => {});
+    await redis.connect();
+    store = createStore(redis);
+  }
+  io = createRealtimeServer(server, { db, store });
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   url = `http://127.0.0.1:${server.address().port}`;
 });
@@ -73,9 +82,28 @@ beforeEach(async () => {
 afterEach(async () => {
   for (const socket of sockets) socket.disconnect();
   await new Promise((resolve) => io.close(resolve));
+  await io.drainPresence();
+  if (redis?.isOpen) await redis.quit();
 });
 
 describe('realtime stream rooms', () => {
+  it('shares the chat cooldown across separate tabs for an account', async () => {
+    const first = await connect(viewer);
+    const second = await connect(viewer);
+    await join(first);
+    await join(second);
+    expect((await emit(first, 'chat:send', { streamId, message: 'First tab' })).success).toBe(true);
+    expect((await emit(second, 'chat:send', { streamId, message: 'Second tab' })).error.code).toBe('RATE_LIMITED');
+    expect(messages).toHaveLength(1);
+  });
+
+  it('rejects chat writes when shared rate limiting is unavailable', async () => {
+    const socket = await connect(viewer);
+    await join(socket);
+    vi.spyOn(store, 'consume').mockRejectedValueOnce(new Error('Redis unavailable'));
+    expect((await emit(socket, 'chat:send', { streamId, message: 'Blocked' })).success).toBe(false);
+    expect(messages).toHaveLength(0);
+  });
   it('rejects invalid tokens at connection', async () => {
     await expect(connect(viewer, 'invalid-token')).rejects.toMatchObject({ data: { code: 'INVALID_TOKEN' } });
   });

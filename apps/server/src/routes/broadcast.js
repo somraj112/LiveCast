@@ -23,6 +23,7 @@ muxWebhookRouter.post('/', express.raw({ type: 'application/json', limit: '1mb' 
         io.sockets.sockets.get(member)?.data.memberships?.delete(data.streamId);
       }
       io.in(room).socketsLeave(room);
+      await io.clearPresence(data.streamId);
     }
   }
   return res.json({ success: true, data });

@@ -11,7 +11,7 @@
   "dependencies": {
     "hls.js": "^1.7.4",
     "lucide-react": "^0.265.0",
-    "next": "16.2.12",
+    "next": "16.4.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "socket.io-client": "^4.8.4"
@@ -22,8 +22,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.12",
+    "eslint": "^10.15.0",
+    "eslint-config-next": "^16.4.6",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -1,5 +1,6 @@
 import prisma from '../config/db.js';
 import { AppError } from '../utils/app-error.js';
+import { infrastructure } from '../infrastructure/store.js';
 
 const categorySelect = { id: true, name: true, icon: true };
 const creatorSelect = { id: true, username: true, profileImage: true, bio: true };
@@ -58,12 +59,13 @@ export async function listDiscoverableStreams(query) {
 }
 
 export async function listTags(search) {
-  return prisma.streamTag.findMany({
+  const load = () => prisma.streamTag.findMany({
     where: search ? { name: { contains: search, mode: 'insensitive' } } : undefined,
     select: { id: true, name: true },
     orderBy: { name: 'asc' },
     take: 100,
   });
+  return search ? load() : infrastructure.cached('tags', 60, load);
 }
 
 export async function getCreatorProfile(username) {

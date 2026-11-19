@@ -1,6 +1,7 @@
 import prisma from '../config/db.js';
 import { AppError } from '../utils/app-error.js';
 import { removeProviderResources } from './broadcast.js';
+import { infrastructure } from '../infrastructure/store.js';
 
 const categorySelect = { id: true, name: true, icon: true };
 
@@ -173,7 +174,7 @@ export async function getPublicStream(streamId) {
 }
 
 export async function listCategories() {
-  return prisma.category.findMany({ orderBy: { name: 'asc' }, select: categorySelect });
+  return infrastructure.cached('categories', 60, () => prisma.category.findMany({ orderBy: { name: 'asc' }, select: categorySelect }));
 }
 
 export { creatorStreamSelect, publicStreamSelect };

@@ -1,0 +1,51 @@
+name: livecast
+services:
+  api:
+    image: ${API_IMAGE:-livecast-api:local}
+    build:
+      context: .
+      dockerfile: apps/server/Dockerfile
+    env_file: ["${DEPLOY_ENV_FILE:-.env.production}"]
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      TRUST_PROXY_HOPS: 1
+      API_REPLICAS: 1
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    logging: &logging
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+  migrate:
+    image: ${API_IMAGE:-livecast-api:local}
+    profiles: ["release"]
+    env_file: ["${DEPLOY_ENV_FILE:-.env.production}"]
+    command: ["npm", "run", "db:deploy"]
+    init: true
+    logging: *logging
+  web:
+    image: ${WEB_IMAGE:-livecast-web:local}
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    init: true
+    logging: *logging
+  edge:
+    image: caddy:2-alpine
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?Set the public hostname, for example livecast.example.com}
+    ports: ["80:80", "443:443", "443:443/udp"]
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+    depends_on:
+      api: { condition: service_healthy }
+      web: { condition: service_healthy }
+    logging: *logging
+volumes:
+  caddy_data:
+  caddy_config:
