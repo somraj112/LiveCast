@@ -82,6 +82,10 @@ applies every migration to a fresh PostgreSQL service, reapplies them to check
 idempotency, checks schema drift, runs server/web lint, API/Socket.IO/PostgreSQL/
 Redis tests, builds Next, and builds both containers. No cloud credentials are
 available to pull requests. Dependabot proposes dependency and Actions updates.
+The scoped `@prisma/config` override keeps Effect on patched 3.22.1 for
+[GHSA-7589-6fvf-x4pw](https://github.com/advisories/GHSA-7589-6fvf-x4pw).
+Remove it when Prisma adopts a patched dependency, after validating migrations and
+the audit. Avoid `npm audit fix --force`, which can suggest a breaking Prisma downgrade.
 
 In repository Settings → Rules → your main ruleset, require these checks after the
 first run: **Lint, tests, build and Prisma** and **Production containers**. Keep PRs
