@@ -38,7 +38,7 @@ jobs:
       FRONTEND_URL: http://localhost:3000
       NEXT_TELEMETRY_DISABLED: 1
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
@@ -61,6 +61,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - run: docker build -f apps/server/Dockerfile -t livecast-api:ci .
       - run: docker build -f apps/web/Dockerfile -t livecast-web:ci .
