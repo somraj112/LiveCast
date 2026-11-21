@@ -13,8 +13,7 @@ const globalForPrisma = globalThis;
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
-    adapter: new PrismaPg({ connectionString }),
-    log: ['query', 'error', 'warn'],
+    adapter: new PrismaPg({ connectionString, connectionTimeoutMillis: 5000, max: 10, statement_timeout: 15000 }),
   });
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

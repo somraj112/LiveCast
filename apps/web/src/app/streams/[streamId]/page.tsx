@@ -12,7 +12,7 @@ type Message = { id: string; streamId: string; senderId: string; message: string
 type Ban = { userId: string; reason: string | null; user: { username: string } };
 type Joined = { messages: Message[]; count: number; canModerate: boolean; userId: string; bans: Ban[] };
 type Reply<T> = { success: true; data: T } | { success: false; error: { code: string; message: string } };
-const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || new URL(process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1").origin;
+const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || (process.env.NODE_ENV === "production" ? undefined : "http://localhost:3001");
 
 export default function StreamRoom() {
   const { streamId } = useParams<{ streamId: string }>();

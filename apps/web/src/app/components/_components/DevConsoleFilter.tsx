@@ -8,7 +8,7 @@ export default function DevConsoleFilter() {
     const origWarn = console.warn.bind(console);
     const origError = console.error.bind(console);
 
-    const filterMsg = (msg: any) => {
+    const filterMsg = (msg: unknown) => {
       try {
         return typeof msg === "string" && msg.includes("Accessing element.ref was removed");
       } catch {
@@ -16,12 +16,12 @@ export default function DevConsoleFilter() {
       }
     };
 
-    console.warn = (...args: any[]) => {
+    console.warn = (...args: unknown[]) => {
       if (args.some(filterMsg)) return;
       origWarn(...args);
     };
 
-    console.error = (...args: any[]) => {
+    console.error = (...args: unknown[]) => {
       if (args.some(filterMsg)) return;
       origError(...args);
     };

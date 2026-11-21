@@ -1,0 +1,36 @@
+name: Deploy database migrations
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment (configure protected GitHub Environments first)
+        type: choice
+        options: [staging, production]
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: migrations-${{ inputs.environment }}
+  cancel-in-progress: false
+jobs:
+  migrate:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: ${{ inputs.environment }}
+    env:
+      # Store this separately in each GitHub Environment. Never use repo-wide
+      # production secrets or expose them to pull_request workflows.
+      DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
+      DIRECT_DATABASE_URL: ${{ secrets.DIRECT_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --workspace @streamline/server --include-workspace-root
+      - name: Require a direct PostgreSQL URL
+        run: node -e "if (!/^postgres(ql)?:\/\//.test(process.env.DIRECT_DATABASE_URL || '')) throw new Error('Set the environment DIRECT_DATABASE_URL secret')"
+      - run: npm run db:validate --workspace @streamline/server
+      - run: npm run db:deploy --workspace @streamline/server

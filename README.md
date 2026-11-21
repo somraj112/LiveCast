@@ -1,4 +1,4 @@
-# Project Name
+# LiveCast
 
 A monorepo streaming platform with shared packages and multiple applications.
 
@@ -19,9 +19,9 @@ A monorepo streaming platform with shared packages and multiple applications.
 
 ```bash
 # Install dependencies
-npm install
+npm ci
 
-# Build all packages
+# Build the web application
 npm run build
 
 # Start development
@@ -31,3 +31,9 @@ npm run dev
 ## Contributing
 
 Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+## Running and deploying LiveCast
+
+Use Node 24 LTS (`nvm install && nvm use`) and install from the repository root with `npm ci`.
+See [production operations](docs/operations/PRODUCTION.md) for PostgreSQL/Redis setup, CI,
+staging deployment, migration releases, monitoring, and recovery exercises.
