@@ -5,29 +5,32 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "dev": "echo \"This package is source-only; build in the consumer app.\""
   },
   "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "tailwindcss": "^3.0.0 || ^4.0.0"
   },
   "dependencies": {
-    "class-variance-authority": "^0.7.1",
-    "tailwind-merge": "^3.6.0",
-    "clsx": "^1.2.1",
-    "@radix-ui/react-dialog": "^1.0.0",
     "@radix-ui/react-alert-dialog": "^1.0.0",
-    "@radix-ui/react-toast": "^1.0.0",
-    "@radix-ui/react-portal": "^1.0.0",
     "@radix-ui/react-checkbox": "^1.0.0",
+    "@radix-ui/react-dialog": "^1.0.0",
+    "@radix-ui/react-portal": "^1.0.0",
     "@radix-ui/react-radio-group": "^1.0.0",
-    "@radix-ui/react-switch": "^1.0.0",
     "@radix-ui/react-select": "^1.0.0",
+    "@radix-ui/react-switch": "^1.0.0",
     "@radix-ui/react-tabs": "^1.0.0",
-    "lucide-react": "^0.265.0"
+    "@radix-ui/react-toast": "^1.0.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^1.2.1",
+    "lucide-react": "^0.265.0",
+    "tailwind-merge": "^3.6.0"
   }
 }
